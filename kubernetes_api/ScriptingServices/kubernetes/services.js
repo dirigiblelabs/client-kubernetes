@@ -4,11 +4,17 @@
 var httpClient = require('net/http/client');
 var generator = require('platform/generator');
 
-exports.list = function(server, token, namespace) {
+exports.list = function(server, token, namespace, queryOptions) {
 	var api = generator.generate('${server}/api/v1/namespaces/${namespace}/services', {
 		'server': server,
 		'namespace': namespace
 	});
+
+	if (queryOptions !== undefined && queryOptions !== null) {
+		if (queryOptions.labelSelector !== undefined && queryOptions.labelSelector !== null) {
+			api += '?labelSelector=' + queryOptions.labelSelector;
+		}
+	}
 
 	var httpResponse = httpClient.get(api, {
 		'headers': [{
