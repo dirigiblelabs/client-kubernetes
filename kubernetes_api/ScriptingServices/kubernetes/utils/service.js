@@ -22,4 +22,4 @@ exports.getPort = function(port) {
 	return {
 		'port': port
 	};
-}
+};
