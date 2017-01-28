@@ -19,6 +19,10 @@ exports.create = function(server, token, namespace, body) {
 	return kubernetesApi.create(getApiBaseUrl(server, namespace), token, body);
 };
 
+exports.update = function(server, token, namespace, name, body) {
+	return kubernetesApi.update(getApiItemUrl(server, namespace, name), token, body);
+};
+
 exports.delete = function(server, token, namespace, name) {
 	return kubernetesApi.delete(getApiItemUrl(server, namespace, name), token);
 };

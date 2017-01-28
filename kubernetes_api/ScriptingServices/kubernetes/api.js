@@ -23,6 +23,11 @@ exports.create = function(apiPath, token, body) {
 	return JSON.parse(httpResponse.data);
 };
 
+exports.update = function(apiPath, token, body) {
+	var httpResponse = httpClient.put(apiPath, getOptions(token, body));
+	return JSON.parse(httpResponse.data);
+};
+
 exports.delete = function(apiPath, token) {
 	var httpResponse = httpClient.delete(apiPath, getOptions(token));
 
