@@ -6,6 +6,9 @@ exports.getObject = function(name, namespace, labels, host, path, serviceName, s
 		'metadata': {
 			'name': name,
 			'namespace': namespace,
+			'annotations': {
+				'ingress.kubernetes.io/rewrite-target': '/'
+			},
 			'labels': labels
 		},
 		'spec': {
