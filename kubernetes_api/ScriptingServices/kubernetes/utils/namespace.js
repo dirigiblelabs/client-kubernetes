@@ -5,6 +5,6 @@ exports.getObject = function(name) {
 	return {
 		'metadata': {
 			'name': name
-	          }
-	      };
+		}
+	};
 };
