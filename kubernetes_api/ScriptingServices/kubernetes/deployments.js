@@ -14,7 +14,7 @@ var DeploymentsApi = function() {
 	return this;
 };
 
-DeploymentsApi.prototype = require('kubernetes/inheritance/api').getApi();
+DeploymentsApi.prototype = require('kubernetes/api').getApi();
 
 exports.getApi = function() {
 	return new DeploymentsApi();
