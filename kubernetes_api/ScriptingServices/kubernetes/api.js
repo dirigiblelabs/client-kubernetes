@@ -1,61 +1,118 @@
 /* globals $ */
 /* eslint-env node, dirigible */
 
-var httpClient = require('net/http/client');
+var Api = function() {
 
-exports.list = function(apiPath, token, queryOptions) {
-	apiPath = addQueryOptions(apiPath, queryOptions);
+	var httpClient = require('net/http/client');
+	var generator = require('platform/generator');
 
-	var httpResponse = httpClient.get(apiPath, getOptions(token));
-
-	var data = httpResponse.data;
-	return data ? JSON.parse(data).items : [];
-};
-
-exports.get = function(apiPath, token) {
-	var httpResponse = httpClient.get(apiPath, getOptions(token));
-
-	return JSON.parse(httpResponse.data);
-};
-
-exports.create = function(apiPath, token, body) {
-	var httpResponse = httpClient.post(apiPath, getOptions(token, body));
-	return JSON.parse(httpResponse.data);
-};
-
-exports.update = function(apiPath, token, body) {
-	var httpResponse = httpClient.put(apiPath, getOptions(token, body));
-	return JSON.parse(httpResponse.data);
-};
-
-exports.delete = function(apiPath, token) {
-	var httpResponse = httpClient.delete(apiPath, getOptions(token));
-
-	return JSON.parse(httpResponse.data);
-};
-
-function addQueryOptions(apiPath, queryOptions) {
-	if (queryOptions !== undefined && queryOptions !== null) {
-		if (queryOptions.labelSelector !== undefined && queryOptions.labelSelector !== null) {
-			return apiPath + '?labelSelector=' + queryOptions.labelSelector;
-		}
-	}
-	return apiPath;
-}
-
-function getOptions(token, body) {
-	var options = {
-		'headers': [{
-			'name': 'Authorization',
-			'value': 'Bearer ' + token
-		}]
+	this.listAll = function(server, token, queryOptions) {
+		var url = this.getApiUrl(server);
+		url = addQueryOptions(url, queryOptions);
+	
+		var httpResponse = httpClient.get(url, getOptions(token));
+	
+		var data = httpResponse.data;
+		return data ? JSON.parse(data).items : [];
 	};
-	if (body !== undefined && body !== null) {
-		options.headers.push({
-			'name': 'Content-Type',
-			'value': 'application/json'
+
+	this.list = function(server, token, namespace, queryOptions) {
+		var url = this.getApiBaseUrl(server, namespace);
+		url = addQueryOptions(url, queryOptions);
+	
+		var httpResponse = httpClient.get(url, getOptions(token));
+	
+		var data = httpResponse.data;
+		return data ? JSON.parse(data).items : [];
+	};
+
+	this.get = function(server, token, namespace, name) {
+		var url = this.getApiItemUrl(server, namespace, name);
+		var httpResponse = httpClient.get(url, getOptions(token));
+	
+		return JSON.parse(httpResponse.data);
+	};
+	
+	this.create = function(server, token, namespace, body) {
+		var url = this.getApiBaseUrl(server, namespace);
+		var httpResponse = httpClient.post(url, getOptions(token, body));
+		return JSON.parse(httpResponse.data);
+	};
+	
+	this.update = function(server, token, namespace, name, body) {
+		var url = this.getApiItemUrl(server, namespace, name);
+		var httpResponse = httpClient.put(url, getOptions(token, body));
+		return JSON.parse(httpResponse.data);
+	};
+	
+	this.delete = function(server, token, namespace, name) {
+		var url = this.getApiItemUrl(server, namespace, name);
+		var httpResponse = httpClient.delete(url, getOptions(token));
+	
+		return JSON.parse(httpResponse.data);
+	};
+
+	this.getApiUrl = function(server) {
+		var urlTemplate = '${server}/' + this.getApiVersion() + '/' + this.getApiKind();
+		return generator.generate(urlTemplate, {
+			'server': server
 		});
-		options.body = JSON.stringify(body);
+	};
+
+	this.getApiBaseUrl = function(server, namespace) {
+		var urlTemplate = '${server}/' + this.getApiVersion() + '/namespaces/${namespace}/' + this.getApiKind();
+		return generator.generate(urlTemplate, {
+			'server': server,
+			'namespace': namespace
+		});
+	};
+
+	this.getApiItemUrl = function(server, namespace, name) {
+		var urlTemplate = '${server}/' + this.getApiVersion() + '/namespaces/${namespace}/' + this.getApiKind() + '/${name}';
+		return generator.generate(urlTemplate, {
+			'server': server,
+			'namespace': namespace,
+			'name': name
+		});
+	};
+
+	this.getApiVersion = function() {
+		throw new Error('Not Implemented!');
+	};
+
+	this.getApiKind = function() {
+		throw new Error('Not Implemented!');
+	};
+
+	function addQueryOptions(apiPath, queryOptions) {
+		if (queryOptions !== undefined && queryOptions !== null) {
+			if (queryOptions.labelSelector !== undefined && queryOptions.labelSelector !== null) {
+				return apiPath + '?labelSelector=' + queryOptions.labelSelector;
+			}
+		}
+		return apiPath;
 	}
-	return options;
-}
+
+	function getOptions(token, body) {
+		var options = {
+			'headers': [{
+				'name': 'Authorization',
+				'value': 'Bearer ' + token
+			}]
+		};
+		if (body !== undefined && body !== null) {
+			options.headers.push({
+				'name': 'Content-Type',
+				'value': 'application/json'
+			});
+			options.body = JSON.stringify(body);
+		}
+		return options;
+	}
+
+	return this;
+};
+
+exports.getApi = function() {
+	return new Api();
+};
