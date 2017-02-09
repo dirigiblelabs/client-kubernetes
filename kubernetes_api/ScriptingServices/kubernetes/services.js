@@ -14,8 +14,6 @@ var ServicesApi = function() {
 	return this;
 };
 
-ServicesApi.prototype = require('kubernetes/api').getApi();
+ServicesApi.prototype = require('kubernetes/api');
 
-exports.getApi = function() {
-	return new ServicesApi();
-};
+module.exports = new ServicesApi();

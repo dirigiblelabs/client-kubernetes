@@ -113,6 +113,4 @@ var Api = function() {
 	return this;
 };
 
-exports.getApi = function() {
-	return new Api();
-};
+module.exports = new Api();

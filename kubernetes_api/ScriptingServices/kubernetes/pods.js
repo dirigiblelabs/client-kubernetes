@@ -14,8 +14,6 @@ var PodsApi = function() {
 	return this;
 };
 
-PodsApi.prototype = require('kubernetes/api').getApi();
+PodsApi.prototype = require('kubernetes/api');
 
-exports.getApi = function() {
-	return new PodsApi();
-};
+module.exports = new PodsApi();

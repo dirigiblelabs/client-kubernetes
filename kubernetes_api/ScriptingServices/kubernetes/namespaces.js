@@ -27,8 +27,6 @@ var NamespacesApi = function() {
 	return this;
 };
 
-NamespacesApi.prototype = require('kubernetes/api').getApi();
+NamespacesApi.prototype = require('kubernetes/api');
 
-exports.getApi = function() {
-	return new NamespacesApi();
-};
+module.exports = new NamespacesApi();

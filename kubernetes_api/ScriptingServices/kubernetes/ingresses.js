@@ -14,8 +14,6 @@ var IngressesApi = function() {
 	return this;
 };
 
-IngressesApi.prototype = require('kubernetes/api').getApi();
+IngressesApi.prototype = require('kubernetes/api');
 
-exports.getApi = function() {
-	return new IngressesApi();
-};
+module.exports = new IngressesApi();

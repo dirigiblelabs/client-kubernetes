@@ -14,8 +14,6 @@ var ReplicaSetsApi = function() {
 	return this;
 };
 
-ReplicaSetsApi.prototype = require('kubernetes/api').getApi();
+ReplicaSetsApi.prototype = require('kubernetes/api');
 
-exports.getApi = function() {
-	return new ReplicaSetsApi();
-};
+module.exports = new ReplicaSetsApi();
