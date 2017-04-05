@@ -9,27 +9,27 @@ var Api = function() {
 	this.listAll = function(server, token, queryOptions) {
 		var url = this.getApiUrl(server);
 		url = addQueryOptions(url, queryOptions);
-	
+
 		var httpResponse = httpClient.get(url, getOptions(token));
-	
-		var data = httpResponse.data;
-		return data ? JSON.parse(data).items : [];
+
+		var data = httpResponse.data ? JSON.parse(httpResponse.data) : null;
+		return data && data.items ? data.items : [];
 	};
 
 	this.list = function(server, token, namespace, queryOptions) {
 		var url = this.getApiBaseUrl(server, namespace);
 		url = addQueryOptions(url, queryOptions);
-	
+
 		var httpResponse = httpClient.get(url, getOptions(token));
-	
-		var data = httpResponse.data;
-		return data ? JSON.parse(data).items : [];
+
+		var data = httpResponse.data ? JSON.parse(httpResponse.data) : null;
+		return data && data.items ? data.items : [];
 	};
 
 	this.get = function(server, token, namespace, name) {
 		var url = this.getApiItemUrl(server, namespace, name);
 		var httpResponse = httpClient.get(url, getOptions(token));
-	
+
 		return JSON.parse(httpResponse.data);
 	};
 	
@@ -38,17 +38,17 @@ var Api = function() {
 		var httpResponse = httpClient.post(url, getOptions(token, body));
 		return JSON.parse(httpResponse.data);
 	};
-	
+
 	this.update = function(server, token, namespace, name, body) {
 		var url = this.getApiItemUrl(server, namespace, name);
 		var httpResponse = httpClient.put(url, getOptions(token, body));
 		return JSON.parse(httpResponse.data);
 	};
-	
+
 	this.delete = function(server, token, namespace, name) {
 		var url = this.getApiItemUrl(server, namespace, name);
 		var httpResponse = httpClient.delete(url, getOptions(token));
-	
+
 		return JSON.parse(httpResponse.data);
 	};
 
@@ -77,10 +77,12 @@ var Api = function() {
 	};
 
 	this.getApiVersion = function() {
+		// This method should be overridden by the inheriting object
 		throw new Error('Not Implemented!');
 	};
 
 	this.getApiKind = function() {
+		// This method should be overridden by the inheriting object
 		throw new Error('Not Implemented!');
 	};
 
