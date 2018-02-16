@@ -10,8 +10,23 @@ TBD
 ```
 
 2. **Usage:**
-```
-TBD
+```javascript
+// TODO: Initial
+
+const server = 'https://<API-SERVER>';
+const token = '<YOUR-TOKEN>';
+
+var response = require('http/v3/response');
+var Pods = require('kubernetes/api/v1/Pods');
+
+var podsApi = new Pods(server, token, 'zeus');
+
+var pod = podsApi.getEntityBuilder();
+pod.getMetadata().setName('asd');
+pod.getMetadata().setNamespace('namespace');
+
+console.error('Pod: ' + JSON.stringify(pod.build()));
+response.println(JSON.stringify(podsApi.list()));
 ```
 
 ## License
