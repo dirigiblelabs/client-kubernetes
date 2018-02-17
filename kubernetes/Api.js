@@ -61,11 +61,24 @@ method.list = function(queryParameters) {
 };
 
 method.get = function(id) {
-	throw new Error('Method \'get()\' is not implemented!')
+	let api = this.getApi(this.namespace);
+	api += '/' + id;
+	let options = getOptions(this.token);
+
+	let response = httpClient.get(api, options);
+
+	return JSON.parse(response.text);
 };
 
 method.create = function(entity) {
-	throw new Error('Method \'create()\' is not implemented!')
+	let api = this.getApi(this.namespace);
+	let options = getOptions(this.token, entity);
+
+	let response = httpClient.post(api, options);
+
+	checkResponseStatus(response, 201);
+
+	return JSON.parse(response.text);
 };
 
 method.update = function(id, entity) {
@@ -73,7 +86,13 @@ method.update = function(id, entity) {
 };
 
 method.delete = function(id) {
-	throw new Error('Method \'delete()\' is not implemented!')
+	let api = this.getApi(this.namespace);
+	api += '/' + id;
+	let options = getOptions(this.token);
+
+	let response = httpClient.delete(api, options);
+
+	return JSON.parse(response.text);
 };
 
 method.getEntityBuilder = function() {
@@ -124,9 +143,8 @@ function checkNotNull(property, errorMessage) {
 
 function checkResponseStatus(response, expectedStatus) {
 	if (response.statusCode !== expectedStatus) {
-		let errorMessage = 'Unexpected response status: ' + response.statusCode + ' | ' + response.text;
-		console.error(errorMessage);
-		throw new Error(errorMessage);
+		console.error('Unexpected response status: ' + response.statusCode + ' | ' + response.text);
+		throw new Error(response.text);
 	}
 }
 
