@@ -1,44 +1,16 @@
-var method = Pod.prototype;
+var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var method = Pod.prototype = Object.create(EntityBuilder);
+
+method.constructor = Pod;
 
 function Pod() {
-	this.metadata = new Metadata();
+	EntityBuilder.constructor.apply(this);
 	this.spec = new Spec();
 }
-
-method.getMetadata = function() {
-	return this.metadata;
-};
 
 method.getSpec = function() {
 	return this.spec;	
 };
-
-function Metadata() {
-
-	Metadata.prototype.getName = function() {
-		return this.name;
-	};
-
-	Metadata.prototype.setName = function(name) {
-		this.name = name;
-	};
-
-	Metadata.prototype.getNamespace = function() {
-		return this.namespace;
-	};
-
-	Metadata.prototype.setNamespace = function(namespace) {
-		this.namespace = namespace;
-	};
-
-	Metadata.prototype.getLabels = function() {
-		return this.labels;
-	};
-
-	Metadata.prototype.setLabels = function(labels) {
-		this.labels = labels;
-	};
-}
 
 function Spec() {
 
@@ -71,19 +43,16 @@ function Spec() {
 }
 
 method.build = function() {
-	return {
+	let entity = {
 		'apiVersion': 'v1',
 		'kind': 'Pod',
-		'metadata': {
-			'name': this.getMetadata().getName(),
-			'namespace': this.getMetadata().getNamespace(),
-			'labels': this.getMetadata().getLabels()
-		},
 		'spec': {
 			'containers': this.getSpec().getContainers(),
 			'volumes': this.getSpec().getVolumes()
 		}
 	};
+	entity.metadata = EntityBuilder.build.call(this);
+	return entity;
 };
 
 module.exports = Pod;

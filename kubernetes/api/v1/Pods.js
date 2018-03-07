@@ -7,7 +7,7 @@ function Pods(server, token, namespace) {
     Api.constructor.apply(this, [{
 		'apiVersion': 'api/v1',
 		'kind': 'pods',
-		'entityBuilder': 'kubernetes/builders/v1/Pod'
+		'entityBuilder': 'kubernetes/builders/api/v1/Pod'
 	}, server, token, namespace]);
 }
 

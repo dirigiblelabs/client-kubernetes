@@ -82,7 +82,15 @@ method.create = function(entity) {
 };
 
 method.update = function(id, entity) {
-	throw new Error('Method \'update()\' is not implemented!')
+	let api = this.getApi(this.namespace);
+	api += '/' + id;
+	let options = getOptions(this.token, entity);
+
+	let response = httpClient.put(api, options);
+
+	checkResponseStatus(response, 200);
+
+	return JSON.parse(response.text);
 };
 
 method.delete = function(id) {
