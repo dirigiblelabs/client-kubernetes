@@ -14,7 +14,6 @@ method.getSpec = function() {
 
 function Spec() {
 
-	this.selector = new Selector();
 	this.template = new Template();
 
 	Spec.prototype.getReplicas = function() {
@@ -25,24 +24,9 @@ function Spec() {
 		this.replicas = replicas;
 	};
 
-	Spec.prototype.getSelector = function() {
-		return this.selector;
-	};
-
 	Spec.prototype.getTemplate = function() {
 		return this.template;
 	};
-
-	function Selector() {
-
-		Selector.prototype.getMatchLabels = function() {
-			return this.matchLabels;
-		};
-
-		Selector.prototype.setMatchLabels = function(matchLabels) {
-			this.matchLabels = matchLabels;
-		};
-	}
 
 	function Template() {
 
@@ -73,12 +57,12 @@ function Spec() {
 
 method.build = function() {
 	let entity = {
-		'apiVersion': 'extensions/v1beta1',
+		'apiVersion': 'apps/v1beta1',
 		'kind': 'Deployment',
 		'spec': {
 			'replicas': this.getSpec().getReplicas(),
 			'selector': {
-				'matchLabels': this.getSpec().getSelector().getMatchLabels()
+				'matchLabels': EntityBuilder.getMetadata.call(this).getLabels()
 			},
 			'template': {
 				'metadata': {
