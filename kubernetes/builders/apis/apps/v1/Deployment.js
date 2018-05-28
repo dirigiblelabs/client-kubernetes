@@ -57,7 +57,7 @@ function Spec() {
 
 method.build = function() {
 	let entity = {
-		'apiVersion': 'apps/v1beta1',
+		'apiVersion': 'apps/v1',
 		'kind': 'Deployment',
 		'spec': {
 			'replicas': this.getSpec().getReplicas(),

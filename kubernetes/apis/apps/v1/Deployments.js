@@ -5,9 +5,9 @@ method.constructor = Deployments;
 
 function Deployments(server, token, namespace) {
     Api.constructor.apply(this, [{
-		'apiVersion': 'apis/apps/v1beta1',
+		'apiVersion': 'apis/apps/v1',
 		'kind': 'deployments',
-		'entityBuilder': 'kubernetes/builders/apis/apps/v1beta1/Deployment'
+		'entityBuilder': 'kubernetes/builders/apis/apps/v1/Deployment'
 	}, server, token, namespace]);
 }
 
