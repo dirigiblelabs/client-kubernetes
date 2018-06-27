@@ -6,6 +6,8 @@ method.constructor = StatefulSet;
 function StatefulSet() {
 	EntityBuilder.constructor.apply(this);
 	this.spec = new Spec();
+	this.storage = '1Gi';
+	this.accessModes = ['ReadWriteOnce'];
 }
 
 method.getSpec = function() {
@@ -18,6 +20,14 @@ method.getStorage = function() {
 
 method.setStorage = function(storage) {
 	this.storage = storage;
+};
+
+method.getVolumeClaimAccessModes = function() {
+	return this.accessModes;
+};
+
+method.setVolumeClaimAccessModes = function(accessModes) {
+	this.accessModes = accessModes;
 };
 
 function Spec() {
@@ -55,6 +65,16 @@ function Spec() {
 		function Spec() {
 
 			this.containers = [];
+			this.terminationGracePeriodSeconds = 10;
+			this.serviceAccountName = 'service-account';
+
+			Spec.prototype.getTerminationGracePeriodSeconds = function() {
+				return this.terminationGracePeriodSeconds;
+			};
+
+			Spec.prototype.setTerminationGracePeriodSeconds = function(terminationGracePeriodSeconds) {
+				this.terminationGracePeriodSeconds = terminationGracePeriodSeconds;
+			};
 
 			Spec.prototype.getContainers = function() {
 				return this.containers;
@@ -62,6 +82,14 @@ function Spec() {
 
 			Spec.prototype.setContainers = function(containers) {
 				this.containers = containers;
+			};
+
+			Spec.prototype.getServiceAccountName = function() {
+				return this.serviceAccountName;
+			};
+
+			Spec.prototype.setServiceAccountName = function(serviceAccountName) {
+				this.serviceAccountName = serviceAccountName;
 			};
 
 			Spec.prototype.addContainer = function(container) {
@@ -86,9 +114,9 @@ method.build = function() {
 					'labels': EntityBuilder.getMetadata.call(this).getLabels()
 				},
 				'spec': {
-					'terminationGracePeriodSeconds': 10,
+					'terminationGracePeriodSeconds': this.getSpec().getTemplate().getSpec().getTerminationGracePeriodSeconds(),
 					'containers': this.getSpec().getTemplate().getSpec().getContainers(),
-					'serviceAccountName': 'service-account'
+					'serviceAccountName': this.getSpec().getTemplate().getSpec().getServiceAccountName()
 				}
 			},
 			'volumeClaimTemplates': [{
@@ -96,7 +124,7 @@ method.build = function() {
 					'name': 'root'
 				},
 				'spec': {
-					'accessModes': ['ReadWriteOnce'],
+					'accessModes': this.getVolumeClaimAccessModes(),
 					'resources': {
 						'requests': {
 							'storage': this.getStorage()
