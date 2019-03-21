@@ -5,7 +5,7 @@ method.constructor = Builds;
 
 function Builds(server, token, namespace) {
     Api.constructor.apply(this, [{
-		apiVersion: "build.knative.dev/v1alpha1",
+		apiVersion: "apis/build.knative.dev/v1alpha1",
 		kind: "builds",
 		entityBuilder: "kubernetes/builders/knative/v1alpha1/Build"
 	}, server, token, namespace]);
