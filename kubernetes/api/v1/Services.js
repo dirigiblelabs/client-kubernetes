@@ -6,7 +6,7 @@ method.constructor = Services;
 function Services(server, token, namespace) {
     Api.constructor.apply(this, [{
 		apiVersion: "api/v1",
-		kind: "Service",
+		kind: "services",
 		entityBuilder: "kubernetes/builders/api/v1/Service"
 	}, server, token, namespace]);
 }

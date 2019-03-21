@@ -6,7 +6,7 @@ method.constructor = StatefulSets;
 function StatefulSets(server, token, namespace) {
     Api.constructor.apply(this, [{
 		apiVersion: "apis/extensions/v1beta1",
-		kind: "Ingress",
+		kind: "ingresses",
 		entityBuilder: "kubernetes/builders/apis/extensions/v1beta1/Ingress"
 	}, server, token, namespace]);
 }

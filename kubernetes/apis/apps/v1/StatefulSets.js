@@ -6,7 +6,7 @@ method.constructor = StatefulSets;
 function StatefulSets(server, token, namespace) {
     Api.constructor.apply(this, [{
 		apiVersion: "apis/apps/v1",
-		kind: "StatefulSet",
+		kind: "statefulsets",
 		entityBuilder: "kubernetes/builders/apis/apps/v1/StatefulSet"
 	}, server, token, namespace]);
 }
