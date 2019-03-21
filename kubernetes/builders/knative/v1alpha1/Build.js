@@ -84,9 +84,10 @@ function Template() {
 }
 
 method.build = function() {
-	let entity = {
+	return {
 		apiVersion: "build.knative.dev/v1alpha1",
 		kind: "Build",
+		metadata: EntityBuilder.build.call(this),
 		spec: {
 			serviceAccountName: this.getSpec().getServiceAccountName(),
 			source: {
@@ -101,8 +102,6 @@ method.build = function() {
 			}
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = Build;

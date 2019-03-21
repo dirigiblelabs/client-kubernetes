@@ -1,4 +1,4 @@
-var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var EntityBuilder = require("kubernetes/builders/EntityBuilder").prototype;
 var method = Deployment.prototype = Object.create(EntityBuilder);
 
 method.constructor = Deployment;
@@ -56,26 +56,25 @@ function Spec() {
 }
 
 method.build = function() {
-	let entity = {
-		'apiVersion': 'apps/v1',
-		'kind': 'Deployment',
-		'spec': {
-			'replicas': this.getSpec().getReplicas(),
-			'selector': {
-				'matchLabels': EntityBuilder.getMetadata.call(this).getLabels()
+	return {
+		apiVersion: "apps/v1",
+		kind: "Deployment",
+		metadata: EntityBuilder.build.call(this),
+		spec: {
+			replicas: this.getSpec().getReplicas(),
+			selector: {
+				matchLabels: EntityBuilder.getMetadata.call(this).getLabels()
 			},
-			'template': {
-				'metadata': {
-					'labels': EntityBuilder.getMetadata.call(this).getLabels()
+			template: {
+				metadata: {
+					labels: EntityBuilder.getMetadata.call(this).getLabels()
 				},
-				'spec': {
-					'containers': this.getSpec().getTemplate().getSpec().getContainers()
+				spec: {
+					containers: this.getSpec().getTemplate().getSpec().getContainers()
 				}
 			}
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = Deployment;

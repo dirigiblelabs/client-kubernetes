@@ -1,4 +1,4 @@
-var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var EntityBuilder = require("kubernetes/builders/EntityBuilder").prototype;
 var method = Pod.prototype = Object.create(EntityBuilder);
 
 method.constructor = Pod;
@@ -43,16 +43,15 @@ function Spec() {
 }
 
 method.build = function() {
-	let entity = {
-		'apiVersion': 'v1',
-		'kind': 'Pod',
-		'spec': {
-			'containers': this.getSpec().getContainers(),
-			'volumes': this.getSpec().getVolumes()
+	return {
+		apiVersion: "v1",
+		kind: "Pod",
+		metadata: EntityBuilder.build.call(this),
+		spec: {
+			containers: this.getSpec().getContainers(),
+			volumes: this.getSpec().getVolumes()
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = Pod;

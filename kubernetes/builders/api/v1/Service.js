@@ -1,4 +1,4 @@
-var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var EntityBuilder = require("kubernetes/builders/EntityBuilder").prototype;
 var method = Service.prototype = Object.create(EntityBuilder);
 
 method.constructor = Service;
@@ -38,17 +38,16 @@ function Spec() {
 }
 
 method.build = function() {
-	let entity = {
-		'apiVersion': 'v1',
-		'kind': 'Service',
-		'spec': {
-			'selector': EntityBuilder.getMetadata.call(this).getLabels(),
-			'type': this.getSpec().getType(),
-			'ports': this.getSpec().getPorts()
+	return {
+		apiVersion: "v1",
+		kind: "Service",
+		metadata: EntityBuilder.build.call(this),
+		spec: {
+			selector: EntityBuilder.getMetadata.call(this).getLabels(),
+			type: this.getSpec().getType(),
+			ports: this.getSpec().getPorts()
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = Service;

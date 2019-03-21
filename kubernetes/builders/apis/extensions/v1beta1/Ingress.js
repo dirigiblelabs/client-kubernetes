@@ -1,4 +1,4 @@
-var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var EntityBuilder = require("kubernetes/builders/EntityBuilder").prototype;
 var method = Ingress.prototype = Object.create(EntityBuilder);
 
 method.constructor = Ingress;
@@ -48,26 +48,25 @@ function Spec() {
 }
 
 method.build = function() {
-	let entity = {
-		'apiVersion': 'extensions/v1beta1',
-		'kind': 'Ingress',
-		'spec': {
-			'rules': [{
-				'host': this.getSpec().getHost(),
-				'http': {
-					'paths': [{
-						'path': this.getSpec().getPath(),
-						'backend': {
-							'serviceName': this.getSpec().getServiceName(),
-							'servicePort': this.getSpec().getServicePort()
+	return {
+		apiVersion: "extensions/v1beta1",
+		kind: "Ingress",
+		metadata: EntityBuilder.build.call(this),
+		spec: {
+			rules: [{
+				host: this.getSpec().getHost(),
+				http: {
+					paths: [{
+						path: this.getSpec().getPath(),
+						backend: {
+							serviceName: this.getSpec().getServiceName(),
+							servicePort: this.getSpec().getServicePort()
 						}
 					}]
 				}
 			}]
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = Ingress;

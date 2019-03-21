@@ -10,6 +10,14 @@ method.getMetadata = function() {
 
 function Metadata() {
 
+	Metadata.prototype.getAnnotations = function() {
+		return this.annotations;
+	};
+
+	Metadata.prototype.setAnnotations = function(annotations) {
+		this.annotations = annotations;
+	};
+
 	Metadata.prototype.getName = function() {
 		return this.name;
 	};
@@ -37,9 +45,10 @@ function Metadata() {
 
 method.build = function() {
 	return {
-		'name': this.getMetadata().getName(),
-		'namespace': this.getMetadata().getNamespace(),
-		'labels': this.getMetadata().getLabels()
+		name: this.getMetadata().getName(),
+		annotations: this.getMetadata().getAnnotations(),
+		namespace: this.getMetadata().getNamespace(),
+		labels: this.getMetadata().getLabels()
 	};
 };
 

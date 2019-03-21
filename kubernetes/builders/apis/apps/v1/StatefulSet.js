@@ -1,4 +1,4 @@
-var EntityBuilder = require('kubernetes/builders/EntityBuilder').prototype;
+var EntityBuilder = require("kubernetes/builders/EntityBuilder").prototype;
 var method = StatefulSet.prototype = Object.create(EntityBuilder);
 
 method.constructor = StatefulSet;
@@ -6,8 +6,8 @@ method.constructor = StatefulSet;
 function StatefulSet() {
 	EntityBuilder.constructor.apply(this);
 	this.spec = new Spec();
-	this.storage = '1Gi';
-	this.accessModes = ['ReadWriteOnce'];
+	this.storage = "1Gi";
+	this.accessModes = ["ReadWriteOnce"];
 }
 
 method.getSpec = function() {
@@ -66,7 +66,7 @@ function Spec() {
 
 			this.containers = [];
 			this.terminationGracePeriodSeconds = 10;
-			this.serviceAccountName = 'service-account';
+			this.serviceAccountName = "service-account";
 
 			Spec.prototype.getTerminationGracePeriodSeconds = function() {
 				return this.terminationGracePeriodSeconds;
@@ -100,42 +100,41 @@ function Spec() {
 }
 
 method.build = function() {
-	let entity = {
-		'apiVersion': 'apps/v1',
-		'kind': 'StatefulSet',
-		'spec': {
-			'serviceName': this.getSpec().getServiceName(),
-			'replicas': this.getSpec().getReplicas(),
-			'selector': {
-				'matchLabels': EntityBuilder.getMetadata.call(this).getLabels()
+	return {
+		apiVersion: "apps/v1",
+		kind: "StatefulSet",
+		metadata: EntityBuilder.build.call(this),
+		spec: {
+			serviceName: this.getSpec().getServiceName(),
+			replicas: this.getSpec().getReplicas(),
+			selector: {
+				matchLabels: EntityBuilder.getMetadata.call(this).getLabels()
 			},
-			'template': {
-				'metadata': {
-					'labels': EntityBuilder.getMetadata.call(this).getLabels()
+			template: {
+				metadata: {
+					labels: EntityBuilder.getMetadata.call(this).getLabels()
 				},
-				'spec': {
-					'terminationGracePeriodSeconds': this.getSpec().getTemplate().getSpec().getTerminationGracePeriodSeconds(),
-					'containers': this.getSpec().getTemplate().getSpec().getContainers(),
-					'serviceAccountName': this.getSpec().getTemplate().getSpec().getServiceAccountName()
+				spec: {
+					terminationGracePeriodSeconds: this.getSpec().getTemplate().getSpec().getTerminationGracePeriodSeconds(),
+					containers: this.getSpec().getTemplate().getSpec().getContainers(),
+					serviceAccountName: this.getSpec().getTemplate().getSpec().getServiceAccountName()
 				}
 			},
-			'volumeClaimTemplates': [{
-				'metadata': {
-					'name': 'root'
+			volumeClaimTemplates: [{
+				metadata: {
+					name: "root"
 				},
-				'spec': {
-					'accessModes': this.getVolumeClaimAccessModes(),
-					'resources': {
-						'requests': {
-							'storage': this.getStorage()
+				spec: {
+					accessModes: this.getVolumeClaimAccessModes(),
+					resources: {
+						requests: {
+							storage: this.getStorage()
 						}
 					}
 				}
 			}]
 		}
 	};
-	entity.metadata = EntityBuilder.build.call(this);
-	return entity;
 };
 
 module.exports = StatefulSet;
