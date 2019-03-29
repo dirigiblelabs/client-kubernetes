@@ -2,12 +2,12 @@
 
 var method = Api.prototype;
 
-var httpClient = require('http/v3/client');
+var httpClient = require("http/v4/client");
 
 function Api(metadata, server, token, namespace) {
-	checkNotNull(metadata, 'The \'metadata\' is required!');
-	checkNotNull(server, 'The \'server\' is required!');
-	checkNotNull(token, 'The \'token\' is required!');
+	checkNotNull(metadata, "The 'metadata' is required!");
+	checkNotNull(server, "The 'server' is required!");
+	checkNotNull(token, "The 'token' is required!");
 	this.metadata = metadata;
 	this.server = server;
 	this.token = token;
@@ -62,7 +62,7 @@ method.list = function(queryParameters) {
 
 method.get = function(id) {
 	let api = this.getApi(this.namespace);
-	api += '/' + id;
+	api += "/" + id;
 	let options = getOptions(this.token);
 
 	let response = httpClient.get(api, options);
@@ -83,7 +83,7 @@ method.create = function(entity) {
 
 method.update = function(id, entity) {
 	let api = this.getApi(this.namespace);
-	api += '/' + id;
+	api += "/" + id;
 	let options = getOptions(this.token, entity);
 
 	let response = httpClient.put(api, options);
@@ -95,7 +95,7 @@ method.update = function(id, entity) {
 
 method.delete = function(id) {
 	let api = this.getApi(this.namespace);
-	api += '/' + id;
+	api += "/" + id;
 	let options = getOptions(this.token);
 
 	let response = httpClient.delete(api, options);
@@ -109,29 +109,29 @@ method.getEntityBuilder = function() {
 };
 
 method.getApi = function(namespace) {
-	let apiTemplate = '{{server}}/{{apiVersion}}/';
+	let apiTemplate = "{{server}}/{{apiVersion}}/";
 	if (isNotNull(namespace)) {
-		apiTemplate += 'namespaces/{namespace}/';
+		apiTemplate += "namespaces/{namespace}/";
 	}
-	apiTemplate += '{kind}';
+	apiTemplate += "{kind}";
 	let api = apiTemplate
-		.replaceAll('{{server}}', this.server)
-		.replaceAll('{{apiVersion}}', this.metadata.apiVersion)
-		.replaceAll('{namespace}', namespace)
-		.replaceAll('{kind}', this.metadata.kind);
+		.replaceAll("{{server}}", this.server)
+		.replaceAll("{{apiVersion}}", this.metadata.apiVersion)
+		.replaceAll("{namespace}", namespace)
+		.replaceAll("{kind}", this.metadata.kind);
 	return api;
 };
 
 method.getQueryParameters = function(parameters) {
-	let queryParameters = '';
+	let queryParameters = "";
 	if (parameters !== undefined && parameters !== null) {
 		for (var i in parameters) {
-			if (queryParameters === '') {
-				queryParameters += '?';
+			if (queryParameters === "") {
+				queryParameters += "?";
 			} else {
-				queryParameters += '&';
+				queryParameters += "&";
 			}
-			queryParameters += i + '=' + parameters[i];
+			queryParameters += i + "=" + parameters[i];
 		}
 	}
 	return queryParameters;
@@ -139,7 +139,7 @@ method.getQueryParameters = function(parameters) {
 
 String.prototype.replaceAll = function(search, replacement) {
     let target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
+    return target.replace(new RegExp(search, "g"), replacement);
 };
 
 function checkNotNull(property, errorMessage) {
@@ -151,7 +151,7 @@ function checkNotNull(property, errorMessage) {
 
 function checkResponseStatus(response, expectedStatus) {
 	if (response.statusCode !== expectedStatus) {
-		console.error('Unexpected response status: ' + response.statusCode + ' | ' + response.text);
+		console.error("Unexpected response status: " + response.statusCode + " | " + response.text);
 		throw new Error(response.text);
 	}
 }
@@ -162,16 +162,16 @@ function isNotNull(property) {
 
 function getOptions(token, entity) {
 	let options = {
-		'headers': [{
-			'name': 'Authorization',
-			'value': 'Bearer ' + token
+		headers: [{
+			name: "Authorization",
+			value: "Bearer " + token
 		}],
-		'sslTrustAllEnabled': true
+		sslTrustAllEnabled: true
 	};
 	if (isNotNull(entity)) {
 		options.headers.push({
-			'name': 'Content-Type',
-			'value': 'application/json'
+			name: "Content-Type",
+			value: "application/json"
 		});
 		options.text = JSON.stringify(entity);
 	}
