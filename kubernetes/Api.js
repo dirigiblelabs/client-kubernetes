@@ -93,6 +93,22 @@ method.update = function(id, entity) {
 	return JSON.parse(response.text);
 };
 
+method.merge = function(id, entity) {
+	let api = this.getApi(this.namespace);
+	api += "/" + id;
+	let options = getOptions(this.token, entity);
+	options.headers.push({
+		name: "Content-Type",
+		value: "application/merge-patch+json"
+	});
+
+	let response = httpClient.patch(api, options);
+
+	checkResponseStatus(response, 200);
+
+	return JSON.parse(response.text);
+};
+
 method.delete = function(id) {
 	let api = this.getApi(this.namespace);
 	api += "/" + id;
