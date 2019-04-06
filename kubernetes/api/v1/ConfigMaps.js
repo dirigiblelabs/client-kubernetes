@@ -6,7 +6,7 @@ method.constructor = ConfigMaps;
 function ConfigMaps(server, token, namespace) {
     Api.constructor.apply(this, [{
 		apiVersion: "api/v1",
-		kind: "configmap",
+		kind: "configmaps",
 		entityBuilder: "kubernetes/builders/api/v1/ConfigMap"
 	}, server, token, namespace]);
 }
