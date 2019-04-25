@@ -51,7 +51,6 @@ method.list = function(queryParameters) {
 	let api = this.getApi(this.namespace);
 	api += this.getQueryParameters(queryParameters);
 	let options = getOptions(this.token);
-
 	let response = httpClient.get(api, options);
 
 	checkResponseStatus(response, 200);
@@ -142,6 +141,9 @@ method.getQueryParameters = function(parameters) {
 	let queryParameters = "";
 	if (parameters !== undefined && parameters !== null) {
 		for (var i in parameters) {
+			if (typeof parameters[i] !== 'string' && typeof parameters[i] !== 'number'){
+				continue;
+			}
 			if (queryParameters === "") {
 				queryParameters += "?";
 			} else {
