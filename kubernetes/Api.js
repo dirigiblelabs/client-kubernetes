@@ -183,7 +183,7 @@ function checkNotNull(property, errorMessage) {
 
 function checkResponseStatus(response, expectedStatus) {
 	if (response.statusCode !== expectedStatus) {
-		throw ErrorFromResponse(repsonse)
+		throw ErrorFromResponse(response)
 	}
 }
 
