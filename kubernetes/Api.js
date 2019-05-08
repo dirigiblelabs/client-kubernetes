@@ -3,6 +3,8 @@
 var method = Api.prototype;
 
 var httpClient = require("http/v4/client");
+var logging = require('log/v4/logging');
+var logger = logging.getLogger('org.eclipse.dirigible.zeus.k8s.api');
 
 function Api(metadata, server, token, namespace) {
 	checkNotNull(metadata, "The 'metadata' is required!");
@@ -38,7 +40,7 @@ method.listAll = function(queryParameters) {
 	let api = this.getApi();
 	api += this.getQueryParameters(queryParameters);
 	let options = getOptions(this.token);
-
+	logger.debug("{} {}", "GET", api);
 	let response = httpClient.get(api, options);
 
 	checkResponseStatus(response, 200);
@@ -51,6 +53,7 @@ method.list = function(queryParameters) {
 	let api = this.getApi(this.namespace);
 	api += this.getQueryParameters(queryParameters);
 	let options = getOptions(this.token);
+	logger.debug("{} {}", "GET", api);
 	let response = httpClient.get(api, options);
 
 	checkResponseStatus(response, 200);
@@ -63,7 +66,7 @@ method.get = function(id) {
 	let api = this.getApi(this.namespace);
 	api += "/" + id;
 	let options = getOptions(this.token);
-
+	logger.debug("{} {}", "GET", api);
 	let response = httpClient.get(api, options);
 
 	return JSON.parse(response.text);
@@ -72,7 +75,7 @@ method.get = function(id) {
 method.create = function(entity) {
 	let api = this.getApi(this.namespace);
 	let options = getOptions(this.token, entity);
-
+	logger.debug("{} {}", "POST", api);
 	let response = httpClient.post(api, options);
 
 	checkResponseStatus(response, 201);
@@ -84,7 +87,7 @@ method.update = function(id, entity) {
 	let api = this.getApi(this.namespace);
 	api += "/" + id;
 	let options = getOptions(this.token, entity);
-
+	logger.debug("{} {}", "PUT", api);
 	let response = httpClient.put(api, options);
 
 	checkResponseStatus(response, 200);
@@ -100,7 +103,7 @@ method.merge = function(id, entity) {
 		name: "Content-Type",
 		value: "application/merge-patch+json"
 	});
-
+	logger.debug("{} {}", "PATCH", api);
 	let response = httpClient.patch(api, options);
 
 	checkResponseStatus(response, 200);
@@ -108,11 +111,22 @@ method.merge = function(id, entity) {
 	return JSON.parse(response.text);
 };
 
+method.apply = function(entity){
+    try{
+        this.create(entity);
+    } catch (err){
+        if(!(err instanceof AlreadyExistsError)){
+            throw err;
+        }
+        this.update(entity.metadata.name, entity);
+    }
+}
+
 method.delete = function(id) {
 	let api = this.getApi(this.namespace);
 	api += "/" + id;
 	let options = getOptions(this.token);
-
+	logger.debug("{} {}", "DELETE", api);
 	let response = httpClient.delete(api, options);
 
 	return JSON.parse(response.text);
@@ -169,10 +183,61 @@ function checkNotNull(property, errorMessage) {
 
 function checkResponseStatus(response, expectedStatus) {
 	if (response.statusCode !== expectedStatus) {
-		console.error("Unexpected response status: " + response.statusCode + " | " + response.text);
-		throw new Error(response.text);
+		throw ErrorFromResponse(repsonse)
 	}
 }
+
+let ErrorFromResponse = function(response){
+	if (response.statusCode == 409 || response.statusCode == 404){
+		let ct = response.headers.filter(function(header){
+			if (header.name !== 'Content-Type' && header.value !== 'application/json'){
+				return false;
+			}
+			return true;
+		}).map(function(header){
+			return header.value;
+		})[0];
+		if(ct === 'application/json'){
+			let parseErr, errResponse;
+			try{
+				errResponse = JSON.parse(response.text);
+			} catch(parseErr){
+				console.warn('failed to parse json response: '+ parseErr);
+			}
+			if (parseErr === undefined){
+				if (errResponse.reason === 'AlreadyExists'){
+					return new AlreadyExistsError(errResponse.message, errResponse.details);
+				}
+				if (errResponse.reason === 'NotFound'){
+					return new NotFoundError(errResponse.message, errResponse.details);
+				}
+			}
+		}
+	}
+	return new Error(response.text);
+}
+
+let AlreadyExistsError = function(message, details) {
+  this.name = "AlreadyExistsError";
+  this.message = (message || "");
+  this.details = (details || "");
+  this.reason = 'AlreadyExists';
+  this.code = 409;
+  this.status = 'Failure';
+}
+AlreadyExistsError.prototype = Error.prototype;
+Api.AlreadyExistsError = AlreadyExistsError;
+
+let NotFoundError = function(message, details) {
+  this.name = "NotFoundError";
+  this.message = (message || "");
+  this.details = (details || "");
+  this.reason = 'NotFound';
+  this.code = 404;
+  this.status = 'Failure';
+}
+NotFoundError.prototype = Error.prototype;
+Api.NotFoundError = NotFoundError;
 
 function isNotNull(property) {
 	return property !== undefined && property !== null;
