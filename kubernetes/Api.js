@@ -2,6 +2,7 @@
 
 var method = Api.prototype;
 
+var errors = require("kubernetes/errors");
 var httpClient = require("http/v4/client");
 var logging = require('log/v4/logging');
 var logger = logging.getLogger('org.eclipse.dirigible.zeus.k8s.api');
@@ -115,7 +116,7 @@ method.apply = function(entity){
     try{
         this.create(entity);
     } catch (err){
-        if(!(err instanceof AlreadyExistsError)){
+        if(!(err instanceof errors.AlreadyExistsError)){
             throw err;
         }
         this.update(entity.metadata.name, entity);
@@ -206,38 +207,16 @@ let ErrorFromResponse = function(response){
 			}
 			if (parseErr === undefined){
 				if (errResponse.reason === 'AlreadyExists'){
-					return new AlreadyExistsError(errResponse.message, errResponse.details);
+					return new errors.AlreadyExistsError(errResponse.message, errResponse.details);
 				}
 				if (errResponse.reason === 'NotFound'){
-					return new NotFoundError(errResponse.message, errResponse.details);
+					return new errors.NotFoundError(errResponse.message, errResponse.details);
 				}
 			}
 		}
 	}
 	return new Error(response.text);
 }
-
-let AlreadyExistsError = function(message, details) {
-  this.name = "AlreadyExistsError";
-  this.message = (message || "");
-  this.details = (details || "");
-  this.reason = 'AlreadyExists';
-  this.code = 409;
-  this.status = 'Failure';
-}
-AlreadyExistsError.prototype = Error.prototype;
-Api.AlreadyExistsError = AlreadyExistsError;
-
-let NotFoundError = function(message, details) {
-  this.name = "NotFoundError";
-  this.message = (message || "");
-  this.details = (details || "");
-  this.reason = 'NotFound';
-  this.code = 404;
-  this.status = 'Failure';
-}
-NotFoundError.prototype = Error.prototype;
-Api.NotFoundError = NotFoundError;
 
 function isNotNull(property) {
 	return property !== undefined && property !== null;
