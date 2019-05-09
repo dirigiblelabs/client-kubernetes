@@ -96,7 +96,7 @@ method.update = function(id, entity) {
 	return JSON.parse(response.text);
 };
 
-method.merge = function(id, entity) {
+method.patch = method.merge = function(id, entity) {
 	let api = this.getApi(this.namespace);
 	api += "/" + id;
 	let options = getOptions(this.token, entity);
@@ -119,7 +119,7 @@ method.apply = function(entity){
         if(!(err instanceof errors.AlreadyExistsError)){
             throw err;
         }
-        this.update(entity.metadata.name, entity);
+        this.patch(entity.metadata.name, entity);
     }
 }
 
