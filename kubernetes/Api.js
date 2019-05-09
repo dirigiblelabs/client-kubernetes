@@ -189,7 +189,7 @@ function checkResponseStatus(response, expectedStatus) {
 }
 
 let ErrorFromResponse = function(response){
-	if (response.statusCode == 409 || response.statusCode == 404){
+	if (response.statusCode == 409 || response.statusCode == 404 || response.statusCode == 422){
 		let ct = response.headers.filter(function(header){
 			if (header.name !== 'Content-Type' && header.value !== 'application/json'){
 				return false;
@@ -211,6 +211,9 @@ let ErrorFromResponse = function(response){
 				}
 				if (errResponse.reason === 'NotFound'){
 					return new errors.NotFoundError(errResponse.message, errResponse.details);
+				}
+				if (errResponse.reason === 'Invalid'){
+					return new errors.FieldValueInvalidError(errResponse.message, errResponse.details);
 				}
 			}
 		}

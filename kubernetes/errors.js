@@ -19,3 +19,14 @@ let NotFoundError = function(message, details) {
 }
 NotFoundError.prototype = Error.prototype;
 exports.NotFoundError = NotFoundError;
+
+let FieldValueInvalidError = function(message, details) {
+  this.name = "NotFoundError";
+  this.message = (message || "");
+  this.details = (details || "");
+  this.reason = 'Invalid';
+  this.code = 404;
+  this.status = 'Failure';
+}
+FieldValueInvalidError.prototype = Error.prototype;
+exports.FieldValueInvalidError = FieldValueInvalidError;
