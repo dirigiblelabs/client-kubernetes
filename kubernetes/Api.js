@@ -69,7 +69,8 @@ method.get = function(id) {
 	let options = getOptions(this.token);
 	logger.debug("{} {}", "GET", api);
 	let response = httpClient.get(api, options);
-
+	checkResponseStatus(response, 200);
+	
 	return JSON.parse(response.text);
 };
 
