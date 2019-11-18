@@ -54,7 +54,7 @@ function Spec() {
 		this.http.push(http);
 	};
 
-	Spec.getHttpBuilder = function() {
+	Spec.prototype.getHttpBuilder = function() {
 		return new HttpBuilder();
 	};
 }
@@ -73,7 +73,7 @@ function HttpBuilder() {
 	};
 
 	HttpBuilder.prototype.addMatch = function(match) {
-		this.match = match;
+		this.match.push(match);
 	};
 
 	HttpBuilder.prototype.getRoute = function() {
@@ -103,7 +103,7 @@ method.build = function() {
 		metadata: EntityBuilder.build.call(this),
 		spec: {
 			gateways: this.getSpec().getGateways(),
-			hosts: this.getSpec().getHost(),
+			hosts: this.getSpec().getHosts(),
 			http: this.getSpec().getHttp()
 		}
 	};
